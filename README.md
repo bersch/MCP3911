@@ -8,7 +8,9 @@ with hardware abstraction layer.
 To adapt the driver to your desired MCU, some of the virtual methods needs
 to be overwritten (see example).
 
-For more info see
+For more info see Microchip datasheet
 
 http://ww1.microchip.com/downloads/en/DeviceDoc/20002286C.pdf
+
+
 
