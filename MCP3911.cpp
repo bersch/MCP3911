@@ -114,11 +114,9 @@ uint32_t C::msb2l(void *src, uint8_t count) {
     uint32_t value = 0L;
     uint8_t *b = (uint8_t *)src;
 
-    while (1) {
+    while (count--) {
         value <<= 8;
         value |= *b++;
-        if (count-- == 0)
-          break;
     }
     return value;
 }
