@@ -57,7 +57,7 @@ namespace MCP3911 {
     typedef enum { A, B } _Channel;
 
     // 3byte data values
-    typedef struct { uint8_t b[3]; } _ChVal;
+    typedef struct __attribute__ ((__packed__)) { uint8_t b[3]; } _ChVal;
 
     // _ConfData _24bit(0x00-0x02, 0x03-0x05) _16bit(0x00-0x01, 0x02-0x03) read only
     typedef struct __attribute__ ((__packed__)) {
