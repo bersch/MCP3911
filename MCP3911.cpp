@@ -97,7 +97,7 @@ bool C::reg_write(uint8_t addr, Looping g, uint8_t count) {
 
 double C::get_value(uint8_t channel) {
 
-    _ChVal& val = (*_c).data.val[channel];
+    _ChVal& val = (*_c).ch[channel];
 
     int32_t data_ch = msb2l((uint8_t *)&val, 3);
 
