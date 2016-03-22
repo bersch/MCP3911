@@ -31,20 +31,28 @@ extern "C" {
 }
 
 namespace MCP3911 {
-
-    const uint8_t REG_CHANNEL_0   = 0x00;
-    const uint8_t REG_CHANNEL_1   = 0x03;
-    const uint8_t REG_MOD         = 0x06;
-    const uint8_t REG_PHASE       = 0x07;
-    const uint8_t REG_GAIN        = 0x09;
-    const uint8_t REG_STATUSCOM   = 0x0a; 
-    const uint8_t REG_CONFIG      = 0x0c;
-    const uint8_t REG_CONFIG2     = 0x0c;
-    const uint8_t REG_OFFCAL_CH0  = 0x0e;
-    const uint8_t REG_GAINCAL_CH0 = 0x11;
-    const uint8_t REG_OFFCAL_CH1  = 0x14;
-    const uint8_t REG_GAINCAL_CH1 = 0x17;
-    const uint8_t REG_VREFCAL     = 0x1a;
+	
+	typedef enum {  REG_CHANNEL_0   = 0x00,
+                    REG_CHANNEL_1   = 0x03,
+                    REG_MOD         = 0x06,
+                    REG_PHASE       = 0x07,
+                    REG_GAIN        = 0x09,
+                    REG_STATUSCOM   = 0x0a, 
+                    REG_CONFIG      = 0x0c,
+                    REG_CONFIG2     = 0x0c,
+                    REG_OFFCAL_CH0  = 0x0e,
+                    REG_GAINCAL_CH0 = 0x11,
+                    REG_OFFCAL_CH1  = 0x14,
+                    REG_GAINCAL_CH1 = 0x17,
+                    REG_VREFCAL     = 0x1a } _Regs;
+  
+#ifndef MCLK
+    #warning "MCLK not defined using 4000000"
+    #define MCLK 4000000
+#endif
+#define  AMCLK (MCLK >> (*_c).config.prescale)
+#define  DMCLK (AMCLK >> 2)
+#define  DRCLK (DMCLK >> ( 32 << (*_c).config.osr))
 
     typedef enum { GAINX1, GAINX2, GAINX4, GAINX8, GAINX16, GAINX32 } Gain;
     typedef enum { BOOSTX05, BOOSTX066, BOOSTX1, BOOSTX2 } Boost;
@@ -56,8 +64,8 @@ namespace MCP3911 {
 
     typedef enum { A, B } _Channel;
 
-    // 3byte data values _24bit(0x00-0x02, 0x03-0x05) _16bit(0x00-0x01, 0x02-0x03) read only
-    typedef struct __attribute__ ((__packed__)) { uint8_t b[3]; } _ChVal;
+    // 3byte data values
+    typedef struct { uint8_t b[3]; } _ChVal;
 
     // _ConfMod (0x06) 
     typedef struct __attribute__ ((__packed__)) {
@@ -162,7 +170,7 @@ namespace MCP3911 {
         bool reg_read(uint8_t addr, Looping g, uint8_t count=0); 
         bool reg_write(uint8_t addr, Looping g, uint8_t count=0);
 
-        double get_value(uint8_t channel);
+        void get_value(double *, uint8_t channel);
 
         uint32_t msb2l(void *src, uint8_t count);
         void l2msb(uint32_t value, void *tgt, uint8_t count);

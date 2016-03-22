@@ -40,32 +40,30 @@ bool C::reg_read(uint8_t addr, Looping g, uint8_t count) {
 
     if (count == 0) {
         switch (g) {
-          case REGISTER: count = 1; 
-                         break;
-          case GROUP: switch (addr) {
-                        case REG_CHANNEL_0: 
-                        case REG_CHANNEL_1:  count = 3; break;
-                        case REG_MOD: 
-                        case REG_STATUSCOM:  count = 4; break;
-                        case REG_OFFCAL_CH0:
-                        case REG_OFFCAL_CH1: count = 6; break;
-                        case REG_VREFCAL:    count = 1; break;
+            case REGISTER: count = 1; 
+                           break;
+            case GROUP: switch (addr) {
+                            case REG_CHANNEL_0: 
+                            case REG_CHANNEL_1:  count = 3; break;
+                            case REG_MOD: 
+                            case REG_STATUSCOM:  count = 4; break;
+                            case REG_OFFCAL_CH0:
+                            case REG_OFFCAL_CH1: count = 6; break;
+                            case REG_VREFCAL:    count = 1; break;
+                        }
+                        break;
+            case TYPE: switch (addr) {
+                           case REG_CHANNEL_0: count = 6; break;
+                           case REG_MOD: count = 21; break;
+                       }
+                       break;
+            case ALL: switch (addr) {
+                          case REG_CHANNEL_0: count = 0x1b; break;
                       }
                       break;
-          case TYPE: switch (addr) {
-                       case REG_CHANNEL_0: count = 6; break;
-                       case REG_MOD: count = 21; break;
-                     }
-                     break;
-          case ALL: switch (addr) {
-                      case REG_CHANNEL_0: count = 0x1b; break;
-                    }
-                    break;
+            default: return false;
         }
     }
-
-    if (count == 0) 
-      return false;
 
     SPI_read(addr, data, count);
 
@@ -77,36 +75,34 @@ bool C::reg_write(uint8_t addr, Looping g, uint8_t count) {
 
     if (count == 0) {
         switch (g) {
-          case REGISTER: count = 1; 
-                         break;
-          case TYPE: switch (addr) {
-                       case REG_MOD: count = 21; break;
-                     }
-                     break;
-          case GROUP: break;
-          case ALL: break;
-    }}
-
-    if (count == 0) 
-      return false;
+            case REGISTER: count = 1; 
+                           break;
+            case TYPE: switch (addr) {
+                           case REG_MOD: count = 21; break;
+                       }
+                       break;
+            case GROUP: break;
+            case ALL: break;
+            default: return false;
+        }}
 
     SPI_write(addr, data, count);
 
     return true;
 }
 
-double C::get_value(uint8_t channel) {
+void C::get_value(double *result, uint8_t channel) {
 
     _ChVal& val = (*_c).ch[channel];
 
     int32_t data_ch = msb2l((uint8_t *)&val, 3);
 
     if (data_ch & 0x00800000L)
-      data_ch |= 0xff000000L;
+        data_ch |= 0xff000000L;
 
     uint8_t gain = (channel == 0)?(*_c).gain.ch0:(*_c).gain.ch1;
 
-    return Vref * data_ch / ( (3*32768*256/2) * (1 << gain) );
+    *result = Vref * data_ch / ( (3*32768*256/2) * (1 << gain) );
 }
 
 // msb array to ulong
@@ -130,9 +126,7 @@ void C::l2msb(uint32_t value, void *tgt, uint8_t count) {
         count--;
         *(b+count) = (uint8_t)(v & 0xff);
         if (count == 0)
-          break;
+            break;
         v >>= 8;
     }
 }
-
-
