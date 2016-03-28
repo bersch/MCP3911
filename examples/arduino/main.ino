@@ -10,7 +10,7 @@ class myADC : public MCP3911::C {
             virtual void begin(void) {
 
                 Vref = 1.2023f;
-                
+
                 pinMode(ADC_CS_PIN, OUTPUT);
                 digitalWrite(ADC_CS_PIN, HIGH);
 
@@ -61,10 +61,15 @@ void setup(void) {
     adc.begin();
 
     {   using namespace MCP3911;
-		
-		// set register map ptr
-		adc._c = &c;
-		
+
+        // set register map ptr
+        adc._c = &c;
+
+        adc.reg_read(REG_STATUSCOM, REGISTER, 2);
+        adc.status.read_reg_incr  = ALL;
+        adc.status.write_reg_incr = ALL;
+        adc.reg_write(REG_STATUSCOM, REGISTER, 2);
+
         // read default values
         adc.reg_read(REG_CHANNEL_0, ALL);
 
@@ -81,10 +86,12 @@ void setup(void) {
         c.config.prescale       = MCLK4;
         c.config.dither         = MAX;
 
+        adc.status.read_reg_incr = ALL;
+        adc.status.write_reg_incr = TYPE;
+
         // vref adjustment
         c.vrefcal += 0x11;
 
-        
         // write out all regs
         adc.reg_write(REG_MOD, TYPE);
     }
