@@ -86,8 +86,8 @@ void setup(void) {
         c.config.prescale       = MCLK4;
         c.config.dither         = MAX;
 
-        adc.status.read_reg_incr = ALL;
-        adc.status.write_reg_incr = TYPE;
+        c.status.read_reg_incr = ALL;
+        c.status.write_reg_incr = TYPE;
 
         // vref adjustment
         c.vrefcal += 0x11;
@@ -96,7 +96,7 @@ void setup(void) {
         adc.reg_write(REG_MOD, TYPE);
 
         // set grouping for TYPE
-        adc.status.read_reg_incr  = TYPE;
+        c.status.read_reg_incr  = TYPE;
         adc.reg_write(REG_STATUSCOM, REGISTER, 2);
     }
 }
