@@ -66,8 +66,8 @@ void setup(void) {
         adc._c = &c;
 
         adc.reg_read(REG_STATUSCOM, REGISTER, 2);
-        adc.status.read_reg_incr  = ALL;
-        adc.status.write_reg_incr = ALL;
+        c.status.read_reg_incr  = ALL;
+        c.status.write_reg_incr = ALL;
         adc.reg_write(REG_STATUSCOM, REGISTER, 2);
 
         // read default values
