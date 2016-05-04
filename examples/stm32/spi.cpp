@@ -5,47 +5,36 @@
 
 
 class myADC : public MCP3911::C {
-    public:
-        virtual void begin(void) {
+  private:
 
-            Vref = 1.2023f;
 
-            reset();
-        }
-        virtual void SPI_read(uint8_t addr, uint8_t *buffer, size_t count) {
+            uint8_t SPI1_send(uint8_t data){
+                while(((SPI1->SR) & SPI_FLAG_TXE) != SPI_FLAG_TXE); // wait while tx-flag not empty
+                *(uint8_t *)&(SPI1->DR) = data; // write data to be transmitted to the SPI data register
+                while ((SPI1->SR & SPI_FLAG_RXNE) != SPI_FLAG_RXNE); // wait while rx-buffer not empty
+                /* Wait until the bus is ready before releasing Chip select */
+                while(((SPI1->SR) & SPI_FLAG_BSY) == SPI_FLAG_BSY);
+                return *(uint8_t *)&(SPI1->DR); // return received data from SPI data register
+            }
 
-            uint8_t TxBuff[256];
-            uint8_t RxBuff[256];
-            uint8_t cmd = addr << 1 | 1;
-            HAL_StatusTypeDef status;
+  public:
+            virtual void begin(void) {
 
-            TxBuff[0] = cmd;
+                Vref = 1.2023f;
 
-            adc_ss_low();
-            if (HAL_SPI_TransmitReceive(&hspi1, TxBuff, RxBuff, count+1, 100) != HAL_OK)
-                Error_Handler();
-            memcpy(buffer,&RxBuff[1],count);
-            adc_ss_high();
-        }
-        virtual void SPI_write(uint8_t addr, uint8_t *buffer, size_t count) {
-        
-            HAL_StatusTypeDef status;
-            uint8_t TxBuffer[256];
-            uint8_t RxBuffer[256];
+                reset();
+            }
 
-            uint8_t cmd = addr << 1 | 0;
-
-            adc_ss_low();
-
-            TxBuffer[0] = cmd;
-            memcpy(&TxBuffer[1], buffer, count);
-
-            if (HAL_SPI_TransmitReceive(&hspi1, TxBuffer, RxBuffer, count+1, 100) != HAL_OK)
-                Error_Handler();
-
-            adc_ss_high();
-
-        }
+            virtual void SPI_read(uint8_t addr, uint8_t *buffer, size_t count) {
+                SPI1_send(addr << 1 | 1);
+                while (count--) 
+                   *buffer++ = SPI1_send(0x00);
+            }
+            virtual void SPI_write(uint8_t addr, uint8_t *buffer, size_t count) {
+                SPI1_send(addr << 1 | 0);
+                while (count--) 
+                   SPI1_send(*buffer++);
+            }
 };
 
 MCP3911::_ConfRegMap c;
@@ -60,6 +49,11 @@ void mcp3911_setup(void) {
 
         // set register map ptr
         adc._c = &c;
+
+        adc.reg_read(REG_STATUSCOM, REGISTER, 2);
+        adc.status.read_reg_incr  = ALL;
+        adc.status.write_reg_incr = ALL;
+        adc.reg_write(REG_STATUSCOM, REGISTER, 2);
 
         // read default values
         adc.reg_read(REG_CHANNEL_0, ALL);
@@ -77,18 +71,28 @@ void mcp3911_setup(void) {
         c.config.prescale       = MCLK4;
         c.config.dither         = MAX;
 
+        adc.status.read_reg_incr = ALL;
+        adc.status.write_reg_incr = TYPE;
+
         // vref adjustment
         c.vrefcal += 0x11;
 
-
         // write out all regs
         adc.reg_write(REG_MOD, TYPE);
+
+        // set grouping for TYPE
+        adc.status.read_reg_incr  = TYPE;
+        adc.reg_write(REG_STATUSCOM, REGISTER, 2);
     }
 }
 
 void loop(void) {
 
-    double v = adc.get_value(0);
+    double v0,v1;
+    
+    adc.reg_read(REG_CHANNEL0, TYPE); // read 6 regs
+    v0 = adc.get_value(0);
+    v1 = adc.get_value(1);
 
 }
 

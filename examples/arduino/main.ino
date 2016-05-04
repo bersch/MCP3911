@@ -94,13 +94,22 @@ void setup(void) {
 
         // write out all regs
         adc.reg_write(REG_MOD, TYPE);
+
+        // set grouping for TYPE
+        adc.status.read_reg_incr  = TYPE;
+        adc.reg_write(REG_STATUSCOM, REGISTER, 2);
     }
 }
 
 void loop(void) {
 
-    double v = adc.get_value(0);
-    Serial.print("CH0: ");Serial.println(v, DEC);
+    double v0,v1;
+    
+    adc.reg_read(REG_CHANNEL0, TYPE); // read 6 regs
+    v0 = adc.get_value(0);
+    v1 = adc.get_value(1);
+    Serial.print("CH0: ");Serial.print(v0, DEC);Serial.print(" ");
+    Serial.print("CH1: ");Serial.println(v1, DEC);
 
 }
 
