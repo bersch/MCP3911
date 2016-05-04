@@ -49,21 +49,12 @@ void mcp3911_setup(void) {
 
         // set register map ptr
         adc._c = &c;
-<<<<<<< HEAD
 
-        adc.reg_read(REG_STATUSCOM, REGISTER, 2);
-        adc.status.read_reg_incr  = ALL;
-        adc.status.write_reg_incr = ALL;
-        adc.reg_write(REG_STATUSCOM, REGISTER, 2);
-
-=======
-        
         adc.reg_read(REG_STATUSCOM, REGISTER, 2);
         c.status.read_reg_incr  = ALL;
         c.status.write_reg_incr = ALL;
         adc.reg_write(REG_STATUSCOM, REGISTER, 2);
         
->>>>>>> c4de6afddfdc408e2326626ee0a241e2a2dc7b29
         // read default values
         adc.reg_read(REG_CHANNEL_0, ALL);
 
@@ -80,8 +71,8 @@ void mcp3911_setup(void) {
         c.config.prescale       = MCLK4;
         c.config.dither         = MAX;
 
-        adc.status.read_reg_incr = ALL;
-        adc.status.write_reg_incr = TYPE;
+        c.status.read_reg_incr = ALL;
+        c.status.write_reg_incr = TYPE;
 
         // vref adjustment
         c.vrefcal += 0x11;
@@ -90,7 +81,7 @@ void mcp3911_setup(void) {
         adc.reg_write(REG_MOD, TYPE);
 
         // set grouping for TYPE
-        adc.status.read_reg_incr  = TYPE;
+        c.status.read_reg_incr  = TYPE;
         adc.reg_write(REG_STATUSCOM, REGISTER, 2);
     }
 }
@@ -104,4 +95,3 @@ void loop(void) {
     v1 = adc.get_value(1);
 
 }
-
