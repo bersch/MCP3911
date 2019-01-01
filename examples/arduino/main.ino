@@ -105,9 +105,11 @@ void loop(void) {
 
     double v0,v1;
     
-    adc.reg_read(REG_CHANNEL0, TYPE); // read 6 regs
-    v0 = adc.get_value(0);
-    v1 = adc.get_value(1);
+    adc.reg_read(REG_CHANNEL_0, TYPE); // read 6 regs
+  
+    adc.get_value(&v0, 0);
+    adc.get_value(&v1, 1);
+  
     Serial.print("CH0: ");Serial.print(v0, DEC);Serial.print(" ");
     Serial.print("CH1: ");Serial.println(v1, DEC);
 
