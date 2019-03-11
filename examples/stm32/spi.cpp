@@ -91,7 +91,7 @@ void loop(void) {
     double v0,v1;
     
     adc.reg_read(REG_CHANNEL0, TYPE); // read 6 regs
-    v0 = adc.get_value(&v0, 0);
-    v1 = adc.get_value(&v1, 1);
+    adc.get_value(&v0, 0);
+    adc.get_value(&v1, 1);
 
 }
