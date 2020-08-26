@@ -12,7 +12,7 @@ Examples are available for Arduino and STM32.
 
 For more info see Microchip datasheet
 
-http://ww1.microchip.com/downloads/en/DeviceDoc/20002286C.pdf
+https://github.com/bersch/MCP3911/blob/master/MCP3911-Datasheet.pdf
 
 
 
