@@ -2,8 +2,7 @@
 MCP3911
 =======
 
-Generic driver for the Microchip MCP3911 Analog Front End (dual 24bit, 125 kSPS ADC)
-with hardware abstraction layer.
+Portable driver for the Microchip MCP3911 Analog Front End (dual 24bit, 125 kSPS ADC)
 
 To adapt the driver to your desired MCU, some of the virtual methods needs
 to be overwritten.
